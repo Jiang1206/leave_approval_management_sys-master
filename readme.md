@@ -10,7 +10,7 @@
 
 前端：HTML、CSS、JavaScript、JQuery、JQuery-Confirm、Bootstrap 5、BootstraTable、BootstrapFileinput、FontAwesome 4
 
-后端：Python、Flask、SQLite
+后端：Python、Flask、SQLite 蒋师兄是个大帅逼
 
 ## 功能
 
