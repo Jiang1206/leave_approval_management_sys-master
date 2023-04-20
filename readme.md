@@ -1,8 +1,10 @@
 # 请假审批管理系统
 
 ## 简介
+从https://github.com/one-ccs/leave_approval_management_sys获取
 
-请假管理审批管理系统，包含前后端及数据库操作。
+
+请假管理审批管理系统，包含前后端及数据库操作。、、、、
 
 ## 技术栈
 
