@@ -9,35 +9,47 @@ UPLOAD_FOLDER = './www/static/user_upload'
 ALLOWED_IMAGE_EXTENSIONS = set(['jpg', 'png', 'webp', 'gif'])
 
 db = Database(DATABASE_FILE)
-
+# 中文注释
 app = Flask(__name__, template_folder='../www/templates', static_folder='../www/static')
+# 设置秘钥
 app.config['SECRET_KEY'] = 'LmzwTvA1p5B2DODi$b2bfe2b68ef2ec99b86dd354e00d3c3c7f533ce18fe8a6f33f7c3af52396b1bb'
+# 设置过期时间
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=1800)
+# 设置最大文件大小
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 
+# 中文注释
 @app.before_request
 def check_login():
+    # 检查是否已登录
     if 'role' not in session:
+        # 清除session
         session.clear()
-
+# 中文注释
 @app.route('/favicon.ico')
 def favicon():
+    # 重定向到favicon.ico
     return redirect(url_for('static', filename='favicon.ico'))
 
 @app.route('/')
 def root():
+    # 获取角色信息
     args = session.get('role', {})
+    # 渲染页面
     return render_template('/index.html', **args)
 
 @app.route('/session')
 def _session():
+    # 获取角色信息
     args = session.get('role', {})
+    # 渲染页面
     return render_template('/session.html', **args)
 
 @app.route('/online')
 def online():
     # 获取在线状态
+    # 检查是否已登录
     if 'role' in session:
         return make_response({'state': 'ok', 'msg': '已登录'}, 200)
     return make_response({'state': 'fail', 'msg': '未登录'}, 200)
@@ -87,7 +99,7 @@ def login():
             session.clear()
             res = make_response({'state': 'ok', 'msg': '登出成功'}, 200)
     return res
-
+# 注册
 @app.route('/regist', methods=['GET', 'POST'])
 def regist():
     res = None
@@ -135,11 +147,20 @@ def user():
 
 @app.route('/upload/<path:key>', methods=['POST'])
 def upload(key):
+    '''
+    上传头像
+    '''
     if key == 'headimg':
+        # Get the file data from the request
         file_data = request.files.get('file_data')
+        # Check if the file data is present
         if file_data:
+            # Generate a filename based on the role id
             filename = f'{session.get("role").get("rid")}.webp'
+            # Save the file data to the specified folder
             file_data.save(f'{UPLOAD_FOLDER}/headimg/{filename}')
         return make_response({'state': 'ok', 'msg': '上传头像'}, 200)
+        # Return a response with a state of 'ok' and a message of '上传头像'
+        return make_response({'state': 'ok','msg': '上传头像'}, 200)
     else:
         return make_response({'state': 'fail', 'msg': '不支持的操作, 已拒绝'}, 403)

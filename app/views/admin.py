@@ -6,9 +6,10 @@ from app.views import admin_blue
 from app.classes import Student
 from app import *
 
-
+# 中文注释
 @admin_blue.before_request
 def check_login():
+    # 如果session中没有role，则跳转到session页面
     if 'role' not in session:
         if request.path == '/admin/':
             return redirect('/session')
@@ -16,31 +17,46 @@ def check_login():
             return make_response({'state': 'fail', 'msg': '请登录后操作'}, 401)
     if session.get('role').get('role') != '管理员':
         return make_response({'state': 'fail', 'msg': '非法操作, 拒绝访问'}, 403)
-
+# 中文注释
 @admin_blue.route('/')
 def root():
+    # 获取当前角色的rid
     rid = session.get('role').get('rid')
+    # 初始化参数
     args = {'headimg': ''}
+    # 查询当前角色的管理员信息
     result = db.execute('SELECT * FROM admin WHERE aid=?', (rid, ))
+    # 如果查询到管理员信息
     if len(result):
+        # 获取管理员信息
         result = result[0]
+        # 将管理员信息添加到参数中
         args = {
             'rid': result['aid'],
             'name': result['name'],
             'gender': result['gender'],
         }
+    # 如果没有查询到管理员信息
     else:
+        # 将当前角色的rid和name添加到参数中
         args = {
             'rid': session.get('role').get('rid'),
             'name': session.get('role').get('name'),
         }
+    # 获取当前角色的头像路径
     headimg_path = url_for('static', filename=f'user_upload/headimg/{args["rid"]}.webp')
+    # 如果头像路径存在
     if path.isfile('www' + headimg_path):
+        # 将头像路径添加到参数中
         args['headimg'] = headimg_path
-    return render_template('/admin.html', **args)
-
+        return render_template('/admin.html', **args)
+# 中文注释
 @admin_blue.route('/students', methods=['GET', 'POST', 'DELETE'])
 def students():
+    '''
+    获取学生信息
+    :return:
+    '''
     res = None
     if request.method == 'GET': # 查询
         query = request.values.get('query', None)
@@ -137,9 +153,13 @@ def students():
         else:
             res = make_response({'state': 'fail', 'msg': '删除失败'}, 403)
     return res
-
+# 中文注释
 @admin_blue.route('/teachers', methods=['GET', 'POST', 'DELETE'])
 def teachers():
+    '''
+    获取教师信息
+    :return:
+    '''
     res = None
     if request.method == 'GET': # 查询
         query = request.values.get('query', None)

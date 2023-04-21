@@ -4,10 +4,14 @@ from flask import request, session, make_response, render_template, redirect
 from app.views import attendance_blue
 from app import *
 
-
+# 中文注释
 @attendance_blue.before_request
 def check_login():
+    '''
+    检查用户是否已登录
+    '''
     if 'role' not in session:
+        # 如果用户未登录，则跳转到登录页面
         if request.path == '/attendance/':
             return redirect('/session')
         else:

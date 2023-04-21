@@ -6,42 +6,60 @@ from app.views import assistant_blue
 from app.classes import Datetime
 from app import *
 
-
+# 中文注释
 @assistant_blue.before_request
 def check_login():
+    '''
+    检查用户是否登录
+    '''
     if 'role' not in session:
+        # 如果用户未登录，则重定向到session
         if request.path == '/assistant/':
             return redirect('/session')
         else:
             return make_response({'state': 'fail', 'msg': '请登录后操作'}, 401)
     if session.get('role').get('role') != '辅导员':
         return make_response({'state': 'fail', 'msg': '非法操作, 拒绝访问'}, 403)
-
+# 中文注释
 @assistant_blue.route('/')
 def root():
+    # 获取当前用户的角色id
     rid = session.get('role').get('rid')
+    # 初始化参数
     args = {'headimg': ''}
+    # 查询教师表中tid=rid的数据
     result = db.execute('SELECT * FROM teacher WHERE tid=?', (rid, ))
+    # 如果查询到数据
     if len(result):
+        # 获取查询到的数据
         result = result[0]
+        # 将查询到的数据添加到参数中
         args = {
             'rid': result['tid'],
             'name': result['name'],
             'gender': result['gender'],
             'telphone': result['telphone']
         }
+    # 如果没有查询到数据，则将当前用户的角色id和名字添加到参数中
     else:
         args = {
             'rid': session.get('role').get('rid'),
             'name': session.get('role').get('name'),
         }
+    # 获取当前用户的头像路径
     headimg_path = url_for('static', filename=f'user_upload/headimg/{args["rid"]}.webp')
+    # 如果头像路径存在
     if path.isfile('www' + headimg_path):
+        # 将头像路径添加到参数中
         args['headimg'] = headimg_path
+    # 返回模板
     return render_template('/assistant.html', **args)
-
+# 中文注释
 @assistant_blue.route('/leaves', methods=['GET', 'POST'])
 def leaves():
+    '''
+    获取待审批及总览
+    '''
     res = None
     tid = session.get('role').get('rid')
     if request.method == 'GET': # 返回待审批及总览
